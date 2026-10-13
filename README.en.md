@@ -1,7 +1,6 @@
 [中文](README.md) · **English**
 
 # PAYLOAD SYNTHESIS
-
 A merge-and-clear game built with Three.js (Suika / "Watermelon Game" style), where the
 art, UI and UX all follow a **NASA-punk** direction — the functional aesthetic of 1970s
 aerospace specification manuals: off-white lacquered hardware, panel seams and rivets,
@@ -11,12 +10,11 @@ and honest wear.
 Portrait and landscape share one physics and gameplay core; the surrounding layout
 adapts and switches between them.
 
-**[▶ Live Demo](https://fanquanpp.github.io/payload-synthesis/)**
+**[ Live Demo](https://fanquanpp.github.io/payload-synthesis/)**
 
 ---
 
 ## Running
-
 ```bash
 cd payload-synthesis
 python -m http.server 8123
@@ -29,7 +27,6 @@ a zero-config static site.
 ---
 
 ## How to Play
-
 | Input | Action |
 |---|---|
 | `←` `→` / `A` `D` | Move the drop position |
@@ -47,7 +44,6 @@ a zero-config static site.
 - Dropping has **0.28 s of input buffering**: a key press during cooldown takes effect the instant the cooldown ends.
 
 ### The 11-Tier Parts Ladder
-
 | Level | Code | Name | Shape | Collision radius factor |
 |---|---|---|---|---|
 | 1 | P/L 01 | BOLT (螺栓) | hexagonal prism | 0.96 |
@@ -69,7 +65,6 @@ polyhedra and tori interlock naturally instead of "hitting air."
 ---
 
 ## Project Structure
-
 ```
 index.html                Entry point (single page, portrait/landscape adaptive)
 start.bat                 One-click local server
@@ -100,7 +95,6 @@ tools/
 ---
 
 ## Art Pipeline
-
 The two scripts under `tools/` form a complete, re-runnable asset workflow:
 
 ```bash
@@ -123,20 +117,17 @@ and the bloom post-processing strength is only 0.62 and rises with the danger le
 ---
 
 ## Visual & Motion Highlights
-
 - **A single interface**: an off-white manual-style page with an inset dark inspection-bay viewport — two materials, one language.
 - **Line-art feel**: every part is inked with an inverted-hull outline, so it reads like a manual illustration. Parts under 5 units of radius skip the outline, saving roughly forty percent of the draw calls.
 - **Motion vocabulary**: mechanical double-gate transitions, panel-assembly slide-ins, four corner rivets locking in sequence, striped bar segment charging, status-LED blinking, and a rotating pulsing prune targeting reticle.
 
 ### Responsive Layout
-
 - **Adaptive board width**: `BH` is fixed while `BW` is derived from the viewport's actual available space (a floor of 0.733 aspect in portrait, a ceiling of 1.15 in landscape). So a wide screen gets a **wider bay**, not a letterboxed narrow column.
 - The layout works by "measuring the real usable area → deriving the board width → hugging the side panels against the bay," rather than letting the panels drift to the window edges.
 - Wide screens use three columns — "status bar on the left / bay / codex on the right"; portrait drops the left column and compresses the codex into a bottom bar.
 - `@container` queries let a narrow bay automatically collapse the corner badges and warning copy that would otherwise collide.
 
 ### Adaptive Quality
-
 The main loop monitors frame rate: three consecutive readings below 46 FPS drops one level
 (full effects → reduced DPR + half-resolution bloom → bloom off + 1× DPR), and twelve
 consecutive readings above 57 FPS raises it back. Quality-level changes are written to the
@@ -145,7 +136,6 @@ activity log.
 ---
 
 ## Physics Solver
-
 - Uniform-grid broad phase plus pairwise narrow phase.
 - Position resolution proceeds **from largest radius to smallest**, so big parts are solved first and small parts don't get squeezed out of the pile.
 - Deep-penetration relaxation: when overlap exceeds a threshold, extra push-out iterations run, waking sleeping bodies if needed.
@@ -156,7 +146,6 @@ activity log.
 ---
 
 ## Debugging
-
 - `?noraf=1` — drives the main loop with `setTimeout` instead of `requestAnimationFrame`, for headless screenshots / embedded contexts (when rAF is throttled).
   Note: in this mode the frame-rate ceiling is limited by timer scheduling, so low readings are expected and do not reflect real performance.
 - `SA.game.setAutoPause(false)` — disables "pause when the page is hidden."
@@ -167,13 +156,11 @@ activity log.
 ---
 
 ## Asset Sources & Licenses
-
 - Material scans: **ambientCG** (CC0 public domain).
 - Fonts: **Archivo**, **Space Mono** (SIL OFL 1.1), self-hosted via jsDelivr / Fontsource.
 - 3D engine: **Three.js r147** (MIT).
 - All UI graphics, icons, part-texture motifs, particles and motion effects are generated in code.
 
 ## Design References
-
 - Art and motion language: the NASA-punk style card (1970s NASA specification manuals / the Starfield interface).
 - Gameplay structure: Watermelon-Game-style merging, with a removal skill and chain scoring.
