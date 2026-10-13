@@ -36,8 +36,8 @@
     DEEP_THRESHOLD: 0.5,
     DEEP_OVER: 1.02,
 
-    SLEEP_VEL2: 0.9,
-    SLEEP_TIME: 0.42,
+    SLEEP_VEL2: 1.8,               /* sleep earlier: 1.34 u/s */
+    SLEEP_TIME: 0.3,
     SLEEP_PEN_SLOP: 0.4,           /* may only sleep when not overlapping */
     WAKE_VEL2: 3.5,
     WAKE_DIST: 0.5,
@@ -49,9 +49,9 @@
     REST_STRONG: 0.13,
     REST_HUGE: 0.24,   /* dead-ish contacts: weight lands, stays */
 
-    ALIGN_THRESH: 0.07,
-    PERTURB: 0.9,
-    ROLL_BIAS: 0.4,
+    ALIGN_THRESH: 0.045,           /* narrower: only truly vertical stacks */
+    PERTURB: 0.45,                 /* half the nudge: settle, don't swim */
+    ROLL_BIAS: 0.25,
 
     MAX_SPAWN: 4,
     DROP_Y: 12,
