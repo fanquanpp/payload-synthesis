@@ -8,7 +8,7 @@
   'use strict';
   var SA = root.SA, C = SA.cfg.CFG, LADDER = SA.cfg.LADDER, MAX_LV = SA.cfg.MAX_LV, UI = SA.cfg.UI;
 
-  var BW = C.BW, BH = C.BH, DEPTH = 30;
+  var BW = C.BW, BH = C.BH, DEPTH = 46;   /* deep bay: real floor depth */
   function syncBW() { BW = C.BW; }
   var FOV = 30, MARGIN = 1.055, ELEV = 46;
 
@@ -362,7 +362,9 @@
       seen.add(b);
       var pop = b.pop > 0 ? 1 + b.pop * 0.4 : 1;
       mesh.position.set(b.x - C.BW / 2, BH / 2 - b.y, 0);
-      mesh.rotation.set(b.angle * 0.6, b.angle, b.angle * 0.35);
+      /* yaw follows the physics angle; pitch/roll are cosmetic and
+         heavily scaled so stacks read as settled, not tumbling */
+      mesh.rotation.set(b.angle * 0.18, b.angle * 0.55, b.angle * 0.1);
       mesh.scale.setScalar(pop);
     }
     bodyMeshes.forEach(function (mesh, b) {

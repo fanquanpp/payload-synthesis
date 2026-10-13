@@ -20,14 +20,14 @@
     BW: BASE_BW, BH: BH,
     MIN_ASPECT: MIN_ASPECT, MAX_ASPECT: MAX_ASPECT,
 
-    GRAV: 150,
+    GRAV: 172,                     /* a bit heavier than earth-ish */
     FIXED: 1 / 180,
     MAX_STEPS: 6,
     ITER_V: 6,
     ITER_P: 5,                     /* position passes (sorted by radius) */
     SLOP: 0.06,
-    MU: 0.03,
-    AIR_DRAG: 0.06,
+    MU: 0.055,                     /* grippier: parts grip the floor */
+    AIR_DRAG: 0.085,               /* thicker air: less floating */
     CORRECTION: 0.5,
     VEL_DAMP_LOW: 0.45,            /* energy bled off gentle contacts    */
     MAX_SPEED: 260,
@@ -42,12 +42,12 @@
     WAKE_VEL2: 3.5,
     WAKE_DIST: 0.5,
 
-    IMPACT_MILD: 14,
-    IMPACT_STRONG: 34,
-    IMPACT_HUGE: 70,
-    REST_MILD: 0.10,
-    REST_STRONG: 0.20,
-    REST_HUGE: 0.34,
+    IMPACT_MILD: 16,
+    IMPACT_STRONG: 38,
+    IMPACT_HUGE: 78,
+    REST_MILD: 0.06,
+    REST_STRONG: 0.13,
+    REST_HUGE: 0.24,   /* dead-ish contacts: weight lands, stays */
 
     ALIGN_THRESH: 0.07,
     PERTURB: 0.9,

@@ -370,8 +370,10 @@
       if (sp2 > maxSp2) { var k = C.MAX_SPEED / Math.sqrt(sp2); b.vx *= k; b.vy *= k; }
       b.x += b.vx * h;
       b.y += b.vy * h;
-      b.spin += (b.vx / Math.max(2, b.visR)) * h * 0.5;
-      b.spin *= (1 - 1.6 * h);
+      /* rotation comes only from travel (rolling), heavily damped:
+         hardware is dense — it does not pirouette in mid-air */
+      b.spin += (b.vx / Math.max(2.5, b.visR)) * h * 0.28;
+      b.spin *= (1 - 3.2 * h);
       b.angle += b.spin * h * 60;
       if (b.pop > 0) { b.pop -= h * 3.6; if (b.pop < 0) b.pop = 0; }
       b.age += h;
