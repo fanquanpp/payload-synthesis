@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#ECE5D6">
+<meta name="description" content="PAYLOAD SYNTHESIS — a NASA-punk merge game built with Three.js. 载荷合成：NASA 朋克风格的合成消除游戏。">
+<title>载荷合成 · PAYLOAD SYNTHESIS</title>
+<link rel="stylesheet" href="src/style.css">
+<script>
+/* ?noraf=1 drives the loop with setTimeout instead of requestAnimationFrame.
+   Useful for headless capture and embeds where rAF is throttled. */
+if (location.search.indexOf('noraf') >= 0) {
+  window.requestAnimationFrame = function (cb) {
+    return setTimeout(function () { cb(performance.now()); }, 16);
+  };
+  window.cancelAnimationFrame = function (id) { clearTimeout(id); };
+}
+/* surface fatal errors in the boot log instead of failing silently */
+window.__errs = [];
+window.addEventListener('error', function (e) {
+  window.__errs.push((e.message || 'error') + ' @ ' + (e.filename || '?') + ':' + (e.lineno || 0));
+  var l = document.getElementById('bootLog');
+  if (l) { l.textContent = 'ERR · ' + (e.message || 'unknown'); l.style.color = '#D63A2C'; }
+});
+window.addEventListener('unhandledrejection', function (e) {
+  window.__errs.push('rejection: ' + ((e.reason && e.reason.message) || e.reason));
+});
+</script>
+</head>
+<body>
+
+<div class="gate gate-top" id="gateTop"></div>
+<div class="gate gate-bottom" id="gateBottom"></div>
+<div class="gate-status" id="gateStatus">
+  <span class="led"></span><span class="txt" id="gateTxt">LOADING</span>
+</div>
+
+<div id="boot" class="boot">
+  <div class="boot-inner">
+    <span class="riv tl"></span><span class="riv tr"></span>
+    <span class="riv bl"></span><span class="riv br"></span>
+    <div class="boot-mark" aria-hidden="true">
+      <svg viewBox="0 0 72 72" width="66" height="66">
+        <circle cx="36" cy="36" r="32" fill="none" stroke="#2A2A2A" stroke-width="2.5"/>
+        <circle cx="36" cy="36" r="25" fill="none" stroke="#D63A2C" stroke-width="3"/>
+        <path d="M36 12 L44 40 L36 34 L28 40 Z" fill="#2A2A2A"/>
+        <path d="M22 50 h28" stroke="#2A2A2A" stroke-width="2.5"/>
+        <circle cx="36" cy="36" r="4" fill="#D63A2C"/>
+      </svg>
+    </div>
+    <div class="boot-title">PAYLOAD SYNTHESIS</div>
+    <div class="boot-sub" data-i18n="brand.sub">载荷合成 · STD 1/1</div>
+    <div class="boot-bar"><i id="bootBar"></i></div>
+    <div class="boot-log" id="bootLog">SYS · …</div>
+  </div>
+</div>
+
+<div id="app" class="app" aria-hidden="true">
+
+  <div class="bg-fx">
+    <div class="bg-grid"></div>
+    <div class="bg-glow"></div>
+  </div>
+
+  <header class="hud">
+    <span class="riv tl"></span><span class="riv tr"></span>
+    <div class="hud-left">
+      <div class="brand">
+        <svg class="brand-mark" viewBox="0 0 72 72" width="34" height="34" aria-hidden="true">
+          <circle cx="36" cy="36" r="32" fill="none" stroke="#2A2A2A" stroke-width="3"/>
+          <circle cx="36" cy="36" r="24" fill="none" stroke="#D63A2C" stroke-width="4"/>
+          <path d="M36 13 L44 40 L36 34 L28 40 Z" fill="#2A2A2A"/>
+          <circle cx="36" cy="36" r="4.5" fill="#D63A2C"/>
+        </svg>
+        <div class="brand-txt">
+          <b>PAYLOAD SYNTHESIS</b>
+          <span data-i18n-html="brand.sub">载荷合成 <i>·</i> STD 1/1</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="hud-stats">
+      <div class="stat stat-score">
+        <span class="k" data-i18n="hud.score">Score 得分</span>
+        <span class="v" id="uiScore">0</span>
+      </div>
+      <div class="stat stat-best">
+        <span class="k" data-i18n="hud.best">Best 最高</span>
+        <span class="v sm" id="uiBest">0</span>
+      </div>
+      <div class="stat stat-combo" id="comboWrap">
+        <span class="k" data-i18n="hud.chain">Chain 连锁</span>
+        <span class="v sm" id="uiCombo">×1</span>
+      </div>
+    </div>
+
+    <button class="skill-btn disabled" id="skillBtn" title="Reject / 剔除 (Q)" aria-label="Reject">
+      <span class="skill-label" data-i18n="hud.reject">剔除 REJECT</span>
+      <span class="skill-count" id="skillCount">0</span>
+      <span class="skill-meter"><i id="skillMeter"></i></span>
+    </button>
+
+    <div class="hud-right">
+      <div class="next-box">
+        <span class="k" data-i18n="hud.next">Next 待装配</span>
+        <canvas id="nextCv" width="120" height="120"></canvas>
+      </div>
+      <button class="lang-btn" id="btnLang" title="Language"><span data-i18n="lang.other">EN</span></button>
+      <button class="icon-btn" id="btnPause" title="Pause" aria-label="Pause">
+        <svg viewBox="0 0 24 24" width="18" height="18"><g fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></g></svg>
+      </button>
+    </div>
+  </header>
+
+  <main class="board">
+    <aside class="rail rail-left">
+      <span class="riv tl"></span><span class="riv tr"></span>
+      <span class="riv bl"></span><span class="riv br"></span>
+      <div class="rail-head"><span class="dot"></span><span data-i18n="rail.system">System Check 状态</span></div>
+      <div class="readout">
+        <div class="ro"><span data-i18n="rail.mass">Mass 质量</span><b id="uiMass">0</b></div>
+        <div class="ro"><span data-i18n="rail.units">Units 件数</span><b id="uiCount">0</b></div>
+        <div class="ro"><span data-i18n="rail.highest">Highest 最高级</span><b id="uiTier">—</b></div>
+        <div class="ro"><span data-i18n="rail.elapsed">Elapsed 用时</span><b id="uiTime">00:00</b></div>
+      </div>
+      <div class="rail-sub" data-i18n="rail.log">Activity Log</div>
+      <div class="loglist" id="uiLog"></div>
+    </aside>
+
+    <div class="stage-wrap">
+      <div class="stage" id="stage">
+        <canvas id="gl"></canvas>
+
+        <div class="frame-line frame-tl"></div>
+        <div class="frame-line frame-tr"></div>
+        <div class="frame-line frame-bl"></div>
+        <div class="frame-line frame-br"></div>
+
+        <div class="tag tag-tl">REC <span id="uiClock">00:00:00</span></div>
+        <div class="tag tag-tr" data-i18n="stage.bay">Bay 01</div>
+
+        <div class="alert" id="alert">
+          <span class="alert-ico">!</span>
+          <span class="alert-txt" data-i18n="stage.alert">Limit Exceeded 越限</span>
+          <span class="alert-time" id="alertTime">6.0s</span>
+        </div>
+
+        <div class="arm-hint" id="armHint" data-i18n="stage.rejectHint">Select unit to reject / 选择要剔除的部件</div>
+        <div class="combo-pop" id="comboPop"></div>
+        <div class="toast" id="toast"></div>
+      </div>
+    </div>
+
+    <aside class="rail rail-right">
+      <span class="riv tl"></span><span class="riv tr"></span>
+      <span class="riv bl"></span><span class="riv br"></span>
+      <div class="rail-head"><span class="dot"></span><span data-i18n="rail.catalog">Parts Catalog 部件表</span></div>
+      <div class="ladder" id="ladder"></div>
+      <div class="rail-sub" data-i18n="rail.nextArticle">Next Article</div>
+      <div class="deploy" id="deploy">
+        <div class="deploy-name" id="deployName">—</div>
+        <div class="deploy-meta" id="deployMeta">—</div>
+      </div>
+    </aside>
+  </main>
+
+  <footer class="foot">
+    <div class="foot-hint">
+      <span class="key">←</span><span class="key">→</span> <span data-i18n="foot.move">Move 移动</span>
+      <span class="sep">/</span>
+      <span class="key">SPC</span> <span data-i18n="foot.release">Release 投放</span>
+      <span class="sep kq">/</span>
+      <span class="kq"><span class="key">Q</span> <span data-i18n="foot.reject">Reject 剔除</span></span>
+      <span class="sep">/</span>
+      <span data-i18n="foot.click">Click · Touch</span>
+    </div>
+    <div class="foot-sys">
+      <span id="uiFps">-- FPS</span><span class="sep">/</span><span data-i18n="foot.style">NASA-PUNK · STD 1/1</span>
+    </div>
+  </footer>
+</div>
+
+<div class="overlay" id="ovStart">
+  <div class="ov-panel">
+    <span class="riv tl"></span><span class="riv tr"></span>
+    <span class="riv bl"></span><span class="riv br"></span>
+    <div class="ov-eyebrow" data-i18n="start.eyebrow">Mission Brief · 任务简报</div>
+    <h1 class="ov-title"><span class="t1" data-i18n="start.t1">载荷</span><span class="accent" data-i18n="start.t2">合成</span></h1>
+    <p class="ov-desc" data-i18n-html="start.desc"></p>
+    <div class="ov-ladder" id="startLadder"></div>
+    <button class="btn btn-primary" id="btnStart">
+      <span data-i18n="start.btn">开始装配</span><i>INITIATE</i>
+    </button>
+    <div class="ov-foot" data-i18n-html="start.foot"></div>
+    <div class="note" data-i18n-html="start.note"></div>
+  </div>
+</div>
+
+<div class="overlay" id="ovPause">
+  <div class="ov-panel">
+    <span class="riv tl"></span><span class="riv tr"></span>
+    <span class="riv bl"></span><span class="riv br"></span>
+    <div class="ov-eyebrow" data-i18n="pause.eyebrow">System Hold · 已暂停</div>
+    <h2 class="ov-title sm" data-i18n="pause.title">装配挂起</h2>
+    <p class="ov-desc" data-i18n="pause.desc"></p>
+    <div class="ov-row">
+      <button class="btn btn-primary" id="btnResume"><span data-i18n="pause.resume">继续</span><i>RESUME</i></button>
+      <button class="btn" id="btnRestart2"><span data-i18n="pause.reset">重开</span><i>RESET</i></button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="ovOver">
+  <div class="ov-panel danger">
+    <span class="riv tl"></span><span class="riv tr"></span>
+    <span class="riv bl"></span><span class="riv br"></span>
+    <div class="ov-eyebrow" data-i18n="over.eyebrow">Mission Abort · 任务中止</div>
+    <h2 class="ov-title sm" data-i18n="over.title">装配失败</h2>
+    <div class="ov-score">
+      <div class="ov-score-main"><span data-i18n="over.score">SCORE 得分</span><b id="overScore">0</b></div>
+      <div class="ov-score-side">
+        <div><span data-i18n="over.best">BEST</span><b id="overBest">0</b></div>
+        <div><span data-i18n="over.tier">TIER</span><b id="overTier">—</b></div>
+      </div>
+    </div>
+    <div class="ov-new" id="overNew" data-i18n="over.new">New Record · 新纪录</div>
+    <button class="btn btn-primary" id="btnRestart"><span data-i18n="over.retry">再次装配</span><i>RETRY</i></button>
+  </div>
+</div>
+
+<script src="vendor/three.min.js"></script>
+<script src="vendor/pp/CopyShader.js"></script>
+<script src="vendor/pp/LuminosityHighPassShader.js"></script>
+<script src="vendor/pp/FXAAShader.js"></script>
+<script src="vendor/pp/EffectComposer.js"></script>
+<script src="vendor/pp/RenderPass.js"></script>
+<script src="vendor/pp/ShaderPass.js"></script>
+<script src="vendor/pp/MaskPass.js"></script>
+<script src="vendor/pp/UnrealBloomPass.js"></script>
+
+<script src="src/i18n.js"></script>
+<script src="src/cfg.js"></script>
+<script src="src/physics.js"></script>
+<script src="src/world.js"></script>
+<script src="src/fx.js"></script>
+<script src="src/ui.js"></script>
+<script src="src/game.js"></script>
+</body>
+</html>

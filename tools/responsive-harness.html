@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>responsive harness</title>
+<style>
+  html,body{margin:0;background:#05080c}
+  .wrap{padding:10px}
+  iframe{border:1px solid #2A3547;display:block;background:#000}
+</style>
+</head>
+<body>
+<div class="wrap"><iframe id="f" src="../index.html?noraf=1" width="414" height="896"></iframe></div>
+<script>
+  window.setSize = function (w, h) {
+    var f = document.getElementById('f');
+    f.width = w; f.height = h;
+  };
+</script>
+</body>
+</html>

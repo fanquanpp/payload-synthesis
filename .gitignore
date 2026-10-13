@@ -1,0 +1,14 @@
+# ── OS / editor cruft ────────────────────────────────────────────
+Thumbs.db
+Desktop.ini
+.DS_Store
+*.log
+*.tmp
+
+# ── working notes (the original brief; kept locally, not shipped) ─
+synthetic accumulation.txt
+_tmp/
+
+# ── build scratch ────────────────────────────────────────────────
+*.tgz
+*.zip
