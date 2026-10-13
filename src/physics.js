@@ -371,9 +371,17 @@
       b.x += b.vx * h;
       b.y += b.vy * h;
       /* rotation comes only from travel (rolling), heavily damped:
-         hardware is dense — it does not pirouette in mid-air */
-      b.spin += (b.vx / Math.max(2.5, b.visR)) * h * 0.28;
-      b.spin *= (1 - 3.2 * h);
+         hardware is dense — it does not pirouette in mid-air.
+         Below crawl speed the spin is zeroed outright so resting
+         parts never keep turning. */
+      if (b.vx * b.vx + b.vy * b.vy < 4) {
+        b.spin = 0;
+      } else {
+        b.spin += (b.vx / Math.max(2.5, b.visR)) * h * 0.28;
+        b.spin *= (1 - 3.2 * h);
+        if (b.spin > 1.4) b.spin = 1.4;          /* rad/s ceiling */
+        else if (b.spin < -1.4) b.spin = -1.4;
+      }
       b.angle += b.spin * h * 60;
       if (b.pop > 0) { b.pop -= h * 3.6; if (b.pop < 0) b.pop = 0; }
       b.age += h;
