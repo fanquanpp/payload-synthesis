@@ -1,19 +1,17 @@
 **简体中文** · [English](README.en.md)
 
 # 载荷合成 · PAYLOAD SYNTHESIS
-
 一款用 Three.js 写的合成消除游戏（合成大西瓜玩法），美术与 UI/UX 全部采用
 **NASA 朋克（NASA-punk）**风格 —— 70 年代航天规范手册的功能美学：米白烤漆硬件、
 面板接缝与铆钉、黑白警示斜纹、全大写小编号、单一红色强调色、诚实的磨损痕迹。
 
 横屏与竖屏共用同一套物理与玩法，外围布局自适应切换。
 
-**[▶ 在线试玩](https://fanquanpp.github.io/payload-synthesis/)**
+**[ 在线试玩](https://fanquanpp.github.io/payload-synthesis/)**
 
 ---
 
 ## 运行
-
 ```bash
 cd payload-synthesis
 python -m http.server 8123
@@ -25,7 +23,6 @@ Windows 下双击 `start.bat` 亦可。部署在 GitHub Pages 上时同样是零
 ---
 
 ## 玩法
-
 | 操作 | 说明 |
 |---|---|
 | `←` `→` / `A` `D` | 移动投放位置 |
@@ -43,7 +40,6 @@ Windows 下双击 `start.bat` 亦可。部署在 GitHub Pages 上时同样是零
 - 投放有 **0.28s 输入缓冲**：冷却期内的按键会在冷却结束的瞬间生效。
 
 ### 11 级部件阶梯
-
 | 级 | 编号 | 名称 | 形状 | 碰撞半径系数 |
 |---|---|---|---|---|
 | 1 | P/L 01 | 螺栓 BOLT | 六棱柱 | 0.96 |
@@ -64,7 +60,6 @@ Windows 下双击 `start.bat` 亦可。部署在 GitHub Pages 上时同样是零
 ---
 
 ## 目录结构
-
 ```
 index.html                入口（单页，横竖屏自适应）
 start.bat                 一键起本地服务
@@ -94,7 +89,6 @@ tools/
 ---
 
 ## 美术管线
-
 `tools/` 下两个脚本构成完整素材流程，可重跑：
 
 ```bash
@@ -118,7 +112,6 @@ python tools/build_textures.py     # 加工成品贴图 → assets/tex/final/
 ---
 
 ## 视觉与动效要点
-
 - **单一界面**：米白手册式页面 + 内嵌一块深色检查舱视窗，两种材质同属一套语言。
 - **线稿感**：每个部件用反壳描边（inverted hull）勾墨线，读起来像手册插图。
   小于 5 单位半径的部件跳过描边，省下约四成绘制调用。
@@ -126,7 +119,6 @@ python tools/build_textures.py     # 加工成品贴图 → assets/tex/final/
   彩条分段充能、状态 LED 闪烁、剔除瞄准框旋转脉冲。
 
 ### 自适应布局
-
 - **板宽自适应**：`BH` 固定，`BW` 由视口实际可用空间推导（竖屏下限 0.733 比例，
   横屏上限 1.15）。所以宽屏得到的是**更宽的舱体**，而不是被信箱化的窄柱。
 - 布局用「测量真实可用区 → 反推板宽 → 把两侧栏贴到舱体旁」的方式，
@@ -135,14 +127,12 @@ python tools/build_textures.py     # 加工成品贴图 → assets/tex/final/
 - `@container` 查询让窄舱自动收起会碰撞的角标与告警文案。
 
 ### 自适应画质
-
 主循环监控帧率：连续 3 次低于 46 FPS 就降一档（全特效 → 降 DPR + 半分辨率辉光 →
 关辉光 + 1× DPR），连续 12 次高于 57 FPS 再升回来。档位变化会写入活动日志。
 
 ---
 
 ## 物理求解器
-
 - 均匀网格宽相 + 逐对窄相。
 - 位置求解**按半径从大到小**处理，大件先解算，小件不会被从堆里挤出去。
 - 深度穿透松弛：重叠超过阈值时额外多轮推开，并在必要时唤醒睡眠体。
@@ -153,7 +143,6 @@ python tools/build_textures.py     # 加工成品贴图 → assets/tex/final/
 ---
 
 ## 调试
-
 - `?noraf=1` —— 用 `setTimeout` 驱动主循环替代 `requestAnimationFrame`，
   用于无头截图 / 内嵌场景（rAF 被节流时）。
   注意：该模式下帧率上限受计时器调度限制，读数偏低属正常，不代表真实性能。
@@ -165,13 +154,11 @@ python tools/build_textures.py     # 加工成品贴图 → assets/tex/final/
 ---
 
 ## 素材来源与许可
-
 - 材质扫描：**ambientCG**（CC0 公有领域）。
 - 字体：**Archivo**、**Space Mono**（SIL OFL 1.1），经 jsDelivr / Fontsource 自托管。
 - 3D 引擎：**Three.js r147**（MIT）。
 - 全部 UI 图形、图标、部件贴图纹样、粒子与动效均由代码生成。
 
 ## 设计参考
-
 - 美术与动效语言：NASA 朋克风格卡（70 年代 NASA 规范手册 / 《星空》界面）。
 - 玩法结构：合成大西瓜类合并玩法，含消除技能与连锁计分。
