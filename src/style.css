@@ -331,9 +331,9 @@ body::after{
 }
 .overlay.show{opacity:1;visibility:visible}
 .ov-panel{
-  position:relative;width:min(440px,92vw);
+  position:relative;width:min(620px,94vw);
   background:var(--bg-panel);border:2px solid var(--ink-dark);
-  padding:32px 30px 26px;
+  padding:44px 46px 38px;
   box-shadow:10px 10px 0 rgba(42,42,42,.18);
   transform:translateY(18px) scale(.97);
   transition:transform .42s cubic-bezier(.2,1.25,.4,1);
@@ -344,23 +344,23 @@ body::after{
 .ov-panel.danger{border-color:var(--accent)}
 .ov-panel.danger::before{background:var(--accent)}
 
-.ov-eyebrow{font-family:var(--f-mono);font-size:10.5px;font-weight:700;letter-spacing:.24em;text-transform:uppercase;
+.ov-eyebrow{font-family:var(--f-mono);font-size:12px;font-weight:700;letter-spacing:.24em;text-transform:uppercase;
   color:var(--ink-light);margin-bottom:10px}
 .ov-panel.danger .ov-eyebrow{color:var(--accent)}
 .ov-title{font-family:var(--f-display);font-weight:900;line-height:1.0;letter-spacing:-.03em;
-  font-size:clamp(34px,7.6vw,50px);color:var(--ink-dark);margin-bottom:12px}
+  font-size:clamp(42px,9vw,72px);color:var(--ink-dark);margin-bottom:12px}
 .ov-title .accent{color:var(--accent)}
-.ov-title.sm{font-size:clamp(25px,5.4vw,34px)}
-.ov-desc{font-size:15px;line-height:1.75;color:var(--ink-mid);margin-bottom:18px}
+.ov-title.sm{font-size:clamp(30px,6vw,46px)}
+.ov-desc{font-size:16.5px;line-height:1.8;color:var(--ink-mid);margin-bottom:18px}
 .ov-desc b{color:var(--accent);font-weight:800}
 
-.ov-ladder{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:22px}
-.ov-ladder canvas{width:26px;height:26px;border:1.5px solid var(--rule);background:var(--bg-deep)}
+.ov-ladder{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:28px}
+.ov-ladder canvas{width:34px;height:34px;border:1.5px solid var(--rule);background:var(--bg-deep)}
 
 .btn{
   position:relative;display:inline-flex;align-items:center;gap:10px;
-  padding:12px 22px;border:2px solid var(--ink-dark);background:var(--bg-substrate);
-  font-family:var(--f-display);font-weight:800;font-size:15px;letter-spacing:.01em;color:var(--ink-dark);
+  padding:14px 28px;border:2px solid var(--ink-dark);background:var(--bg-substrate);
+  font-family:var(--f-display);font-weight:800;font-size:17px;letter-spacing:.01em;color:var(--ink-dark);
   transition:.16s;box-shadow:3px 3px 0 rgba(42,42,42,.2);
 }
 .btn i{font-style:normal;font-family:var(--f-mono);font-size:10px;color:var(--ink-light);letter-spacing:.1em}
@@ -371,29 +371,29 @@ body::after{
 .btn-primary:hover{box-shadow:5px 5px 0 rgba(142,33,24,.4)}
 
 .ov-row{display:flex;gap:10px;flex-wrap:wrap}
-.ov-score{display:flex;align-items:flex-end;gap:22px;margin:6px 0 18px}
+.ov-score{display:flex;align-items:flex-end;gap:30px;margin:10px 0 24px}
 .ov-score-main{display:flex;flex-direction:column;gap:2px}
 .ov-score-main span{font-family:var(--f-mono);font-size:9px;letter-spacing:.2em;color:var(--ink-light)}
-.ov-score-main b{font-family:var(--f-display);font-weight:900;font-size:clamp(40px,9vw,58px);color:var(--ink-dark);line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-.03em}
+.ov-score-main b{font-family:var(--f-display);font-weight:900;font-size:clamp(48px,10vw,74px);color:var(--ink-dark);line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-.03em}
 .ov-score-side{display:flex;flex-direction:column;gap:8px;padding-bottom:5px}
 .ov-score-side div{display:flex;gap:8px;align-items:baseline}
-.ov-score-side span{font-family:var(--f-mono);font-size:9px;letter-spacing:.14em;color:var(--ink-light);width:36px}
-.ov-score-side b{font-family:var(--f-mono);font-weight:700;font-size:13px;color:var(--ink-dark)}
+.ov-score-side span{font-family:var(--f-mono);font-size:11px;letter-spacing:.14em;color:var(--ink-light);width:36px}
+.ov-score-side b{font-family:var(--f-mono);font-weight:700;font-size:15px;color:var(--ink-dark)}
 .ov-new{font-family:var(--f-mono);font-weight:700;font-size:11px;letter-spacing:.14em;text-transform:uppercase;
   color:var(--accent);margin-bottom:16px;opacity:0}
 .ov-new.on{opacity:1;animation:newFlash 1.1s steps(2,end) infinite}
 @keyframes newFlash{50%{opacity:.35}}
-.ov-foot{margin-top:16px;font-family:var(--f-mono);font-size:10.5px;letter-spacing:.05em;color:var(--ink-light);line-height:1.7;text-transform:uppercase}
+.ov-foot{margin-top:20px;font-family:var(--f-mono);font-size:12px;letter-spacing:.05em;color:var(--ink-light);line-height:1.7;text-transform:uppercase}
 
 /* a single taped-on handwritten note — the "punk" half */
 .note{
-  position:absolute;right:-14px;bottom:-16px;z-index:5;
-  font-family:var(--f-mono);font-size:11px;color:#3b3a34;
+  position:absolute;right:-20px;top:-14px;z-index:5;
+  font-family:var(--f-mono);font-size:12.5px;color:#3b3a34;
   background:#F2E9C9;border:1px solid #C9BC90;padding:6px 10px;
   transform:rotate(-3.2deg);box-shadow:2px 3px 0 rgba(42,42,42,.14);
   max-width:150px;line-height:1.4;
 }
-.note::before{content:'';position:absolute;top:-6px;left:50%;margin-left:-16px;
+.note::before{content:'';position:absolute;bottom:-6px;left:50%;margin-left:-16px;
   width:32px;height:11px;background:rgba(214,58,44,.28);transform:rotate(-2deg)}
 
 /* ───────────────────────────── responsive ───────────────────────────── */
@@ -567,3 +567,12 @@ body::after{
   .skill-btn .skill-label{display:none}
   .skill-btn .skill-count{font-size:16px}
 }
+/* ═══ cursors (generated by tools/build_textures.py helpers) ═══
+   NASA-punk crosshair by default, an open reticle over the bay,
+   red corner brackets while the purge skill is targeting.      */
+:root{ --cursor-default:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2232%22%20height%3D%2232%22%20viewBox%3D%220%200%2032%2032%22%3E%3Cpath%20d%3D%22M16%202%20v7%20M16%2023%20v7%20M2%2016%20h7%20M23%2016%20h7%22%20stroke%3D%22%2523ECE5D6%22%20stroke-width%3D%222.6%22%20stroke-linecap%3D%22square%22/%3E%3Cpath%20d%3D%22M16%203%20v6%20M16%2023%20v6%20M3%2016%20h6%20M23%2016%20h6%22%20stroke%3D%22%25232A2A2A%22%20stroke-width%3D%221.1%22%20stroke-linecap%3D%22square%22/%3E%3Ccircle%20cx%3D%2216%22%20cy%3D%2216%22%20r%3D%224.2%22%20fill%3D%22%2523ECE5D6%22%20stroke%3D%22%25232A2A2A%22%20stroke-width%3D%221.4%22/%3E%3Ccircle%20cx%3D%2216%22%20cy%3D%2216%22%20r%3D%221.4%22%20fill%3D%22%2523D63A2C%22/%3E%3C/svg%3E") 16 16, auto; --cursor-aim:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2232%22%20height%3D%2232%22%20viewBox%3D%220%200%2032%2032%22%3E%3Ccircle%20cx%3D%2216%22%20cy%3D%2216%22%20r%3D%229%22%20fill%3D%22none%22%20stroke%3D%22%2523ECE5D6%22%20stroke-width%3D%222.6%22/%3E%3Ccircle%20cx%3D%2215%22%20cy%3D%2215%22%20r%3D%229%22%20fill%3D%22none%22%20stroke%3D%22%2523D63A2C%22%20stroke-width%3D%221.1%22/%3E%3Cpath%20d%3D%22M16%202%20v5%20M16%2025%20v5%20M2%2016%20h5%20M25%2016%20h5%22%20stroke%3D%22%2523D63A2C%22%20stroke-width%3D%222.4%22/%3E%3Ccircle%20cx%3D%2216%22%20cy%3D%2216%22%20r%3D%221.6%22%20fill%3D%22%2523D63A2C%22/%3E%3C/svg%3E") 16 16, auto; --cursor-reject:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2232%22%20height%3D%2232%22%20viewBox%3D%220%200%2032%2032%22%3E%3Cpath%20d%3D%22M9%202%20H2%20v7%20M23%202%20h7%20v7%20M9%2030%20H2%20v-7%20M23%2030%20h7%20v-7%22%20stroke%3D%22%2523D63A2C%22%20stroke-width%3D%222.8%22%20fill%3D%22none%22/%3E%3Crect%20x%3D%2213%22%20y%3D%2213%22%20width%3D%226%22%20height%3D%226%22%20fill%3D%22%2523D63A2C%22%20stroke%3D%22%2523ECE5D6%22%20stroke-width%3D%221.4%22/%3E%3C/svg%3E") 16 16, auto; }
+body{ cursor:var(--cursor-default) }
+button,.icon-btn,.lang-btn,.skill-btn{ cursor:var(--cursor-default) }
+.stage{ cursor:var(--cursor-aim) }
+.stage.arm{ cursor:var(--cursor-reject) }
+a,.btn,.ladder .spec{ cursor:var(--cursor-default) }

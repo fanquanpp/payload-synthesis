@@ -393,7 +393,9 @@
       new THREE.LineDashedMaterial({ color: 0xD8D0BE, dashSize: 2.6, gapSize: 2.6, transparent: true, opacity: 0.55 })
     );
     ghostGuide.computeLineDistances();
-    ghost.add(ghostGuide);
+    /* a scene-level object, NOT a child of `ghost`: the ghost rotates with
+       the payload's idle spin, and the drop guide must stay vertical */
+    scene.add(ghostGuide);
 
     /* targeting reticle for the purge skill */
     hoverRing = new THREE.Mesh(
@@ -434,7 +436,8 @@
     ghost.position.set(wx, wy, 1.2);
     ghost.rotation.y = clock * 0.7;
     ghost.userData.inner.rotation.set(clock * 0.4, clock * 0.7, 0);
-    ghostGuide.position.set(-wx, 0, -0.6);
+    /* the guide lives in world space: follow the aim column, keep vertical */
+    ghostGuide.position.set(wx, 0, 1.8);
     aimLight.position.set(wx, wy, 26);
     aimLight.intensity = 1.4;
   }

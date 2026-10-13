@@ -83,7 +83,6 @@ vendor/
 assets/tex/
   lv01..lv11.jpg          ambientCG 原始材质扫描（贴图管线输入）
   final/lv##_a.jpg        成品反照率贴图
-  final/lv##_e.jpg        成品自发光贴图（本风格刻意接近全黑）
 tools/
   fetch_textures.py       从 ambientCG 检索并下载材质
   build_textures.py       美术加工：把照片扫描转成 NASA 朋克硬件贴图
