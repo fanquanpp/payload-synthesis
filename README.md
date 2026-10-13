@@ -1,3 +1,5 @@
+**简体中文** · [English](README.en.md)
+
 # 载荷合成 · PAYLOAD SYNTHESIS
 
 一款用 Three.js 写的合成消除游戏（合成大西瓜玩法），美术与 UI/UX 全部采用
@@ -13,7 +15,7 @@
 ## 运行
 
 ```bash
-cd synthetic-accumulation
+cd payload-synthesis
 python -m http.server 8123
 # 打开 http://127.0.0.1:8123/
 ```
