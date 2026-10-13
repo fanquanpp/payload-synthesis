@@ -24,7 +24,7 @@
 
   /* ink / cream / red — the page's own palette, so effects read as
      part of the manual rather than as neon overlays */
-  var INK = 0x2A2A2A, CREAM = 0xF2ECDF, RED = 0xD63A2C;
+  var CREAM = 0xF2ECDF, GOLD = 0xD2A85E, RED = 0xD63A2C;  /* no ink in sparks — effects stay bright */
 
   function wx(x) { return x - C.BW / 2; }
   function wy(y) { return C.BH / 2 - y; }
@@ -56,7 +56,7 @@
     if (parts.instanceColor) parts.instanceColor.needsUpdate = true;
   }
 
-  var SPARK_MIX = [CREAM, CREAM, RED, INK];
+  var SPARK_MIX = [CREAM, CREAM, RED, GOLD];
 
   function burst(x, y, colorHex, count, power) {
     if (!parts) return;
@@ -114,7 +114,7 @@
     r.r1 = radius * (1.9 + power * 0.7);
     r.w = 0.7 + power * 0.55;
     r.col.set(colorHex);
-    /* lerp toward ink as it expands — hardware accent fading to print */
+    /* lerp toward cream as it expands — accent fading to paint */
     rings.setColorAt(ringPtr, r.col);
     if (rings.instanceColor) rings.instanceColor.needsUpdate = true;
     ringPtr = (ringPtr + 1) % C.MAX_RINGS;
@@ -246,7 +246,7 @@
       _m4.compose(_v, _q, _s);
       rings.setMatrixAt(j, _m4);
       /* accent -> ink as the ring expands, like paint fading to print */
-      _col.copy(r.col).lerp(_col.set(INK), kk * 0.8).multiplyScalar(1 - kk * 0.35);
+      _col.copy(r.col).lerp(_col.set(CREAM), kk * 0.8).multiplyScalar(1 - kk * 0.35);
       rings.setColorAt(j, _col);
       rcdirty = true;
       void th;
