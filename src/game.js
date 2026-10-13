@@ -162,7 +162,7 @@
       var b = bs[i];
       if (b.dead) continue;
       var dx = bx - b.x, dy = by - b.y;
-      if (dx * dx + dy * dy <= b.r * b.r) return b;
+      if (dx * dx + dy * dy <= b.outer * b.outer) return b;
     }
     return null;
   }
@@ -175,11 +175,11 @@
 
     SA.fx.burst(b.x, b.y, L.col, 20, 1.35);
     SA.fx.burst(b.x, b.y, '#2A2A2A', 12, 1.1);
-    SA.fx.wave(b.x, b.y, '#D63A2C', b.r * 2.2, 1.25);
+    SA.fx.wave(b.x, b.y, '#D63A2C', b.outer * 2.2, 1.25);
     SA.world.setShake(0.55);
     SA.fx.hit(0.42);
 
-    var wr = b.r + 24, wr2 = wr * wr;
+    var wr = b.outer + 24, wr2 = wr * wr;
     for (var k = 0; k < world.bodies.length; k++) {
       var o = world.bodies[k];
       if (o === b || o.dead) continue;
@@ -375,7 +375,7 @@
     for (var i = 0; i < world.bodies.length; i++) {
       var b = world.bodies[i];
       if (b.age < C.DROP_GRACE) continue;
-      var topEdge = b.y - b.r * 0.35;
+      var topEdge = b.y - b.outer * 0.4;
       if (topEdge < C.TOP_LINE) anyOver = true;
       var d = 1 - (topEdge - C.TOP_LINE) / 42;
       if (d > closest) closest = d;
