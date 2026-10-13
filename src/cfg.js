@@ -72,9 +72,8 @@
     COMBO_WINDOW: 2.6,             /* base chain window; +0.05s per link */
     COMBO_CAP: 32,                 /* multiplier ceiling — deep chains pay */
 
-    SKILL_STEP: 500,               /* points per reject charge */
+    SKILL_STEP: 10000,             /* points per reject charge */
     SKILL_MAX: 9,                  /* stockpile cap */
-    SKILL_ESCALATE: 4,             /* beyond this, each charge costs +50% */
   };
 
   /* ── payload ladder ──────────────────────────────────────────

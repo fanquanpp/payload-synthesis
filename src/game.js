@@ -118,14 +118,9 @@
     SA.world.setDanger(0);
   }
 
-  /* the next charge's price: base 500, +50% for each charge held past
-     the free-stockpile allowance — stockpiling is possible, not free */
-  function nextSkillCost() {
-    var over = Math.max(0, skillCharges - C.SKILL_ESCALATE);
-    return Math.round(C.SKILL_STEP * Math.pow(1.5, over));
-  }
+  /* one charge per SKILL_STEP points — flat pricing, simple to read */
   function skillProgress() {
-    return SA.cfg.clamp((score - nextSkillAt) / nextSkillCost(), 0, 1);
+    return SA.cfg.clamp((score - nextSkillAt) / C.SKILL_STEP, 0, 1);
   }
   function syncSkill() { SA.ui.setSkill(skillCharges, armed, skillProgress()); }
 
@@ -134,7 +129,7 @@
     while (score >= nextSkillAt && skillCharges < C.SKILL_MAX) {
       skillCharges++;
       got++;
-      nextSkillAt += nextSkillCost();          /* price grows with stock */
+      nextSkillAt += C.SKILL_STEP;
     }
     if (score >= nextSkillAt) nextSkillAt = score + 1;  /* full: park the meter */
     if (got) {
