@@ -258,31 +258,31 @@ body::after{
 
 /* ───────────────────────────── rails ───────────────────────────── */
 .rail{
-  flex:0 0 184px;width:184px;display:flex;flex-direction:column;gap:9px;
-  padding:12px;background:var(--bg-panel);border:2px solid var(--ink-dark);
+  flex:0 0 232px;width:232px;display:flex;flex-direction:column;gap:11px;
+  padding:14px;background:var(--bg-panel);border:2px solid var(--ink-dark);
   position:relative;overflow:hidden;
 }
 .rail::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;
   background:linear-gradient(90deg,var(--stripe-1) 25%,var(--stripe-2) 25%,var(--stripe-2) 50%,var(--stripe-3) 50%,var(--stripe-3) 75%,var(--stripe-4) 75%)}
 .rail-head{
   display:flex;align-items:center;gap:7px;
-  font-family:var(--f-mono);font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;
-  color:var(--ink-mid);padding:4px 0 8px;border-bottom:1.5px solid var(--ink-dark);
+  font-family:var(--f-mono);font-size:11.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-mid);padding:5px 0 9px;border-bottom:1.5px solid var(--ink-dark);
 }
 .rail-head .dot{width:7px;height:7px;border-radius:50%;background:var(--accent)}
-.rail-sub{font-family:var(--f-mono);font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;
+.rail-sub{font-family:var(--f-mono);font-size:11.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;
   color:var(--ink-light);margin-top:auto;padding-top:8px;border-top:1.5px solid var(--rule)}
 
-.readout{display:flex;flex-direction:column;gap:5px}
+.readout{display:flex;flex-direction:column;gap:7px}
 .ro{display:flex;align-items:baseline;justify-content:space-between;gap:8px;
-  border-bottom:1px dotted var(--rule);padding-bottom:4px}
-.ro span{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-light)}
-.ro b{font-family:var(--f-mono);font-weight:700;font-size:14px;color:var(--ink-dark);font-variant-numeric:tabular-nums}
+  border-bottom:1px dotted var(--rule);padding-bottom:5px}
+.ro span{font-family:var(--f-mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-light)}
+.ro b{font-family:var(--f-mono);font-weight:700;font-size:16px;color:var(--ink-dark);font-variant-numeric:tabular-nums}
 .ro b.hot{color:var(--accent)}
 
 .loglist{display:flex;flex-direction:column;gap:3px;overflow:hidden;flex:1 1 auto;min-height:0}
 .loglist div{
-  font-family:var(--f-mono);font-size:10px;letter-spacing:.02em;color:var(--ink-light);
+  font-family:var(--f-mono);font-size:11.5px;letter-spacing:.02em;color:var(--ink-light);
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;animation:logIn .3s ease both;
 }
 .loglist div.hi{color:var(--accent);font-weight:700}
@@ -304,8 +304,8 @@ body::after{
 .spec.found i{color:var(--ink-dark)}
 
 .deploy{border:2px solid var(--ink-dark);background:var(--bg-deep);padding:8px;text-align:center;position:relative}
-.deploy-name{font-family:var(--f-display);font-weight:800;font-size:15px;color:var(--ink-dark);letter-spacing:-.01em}
-.deploy-meta{font-family:var(--f-mono);font-size:10px;color:var(--ink-light);margin-top:3px;letter-spacing:.05em;text-transform:uppercase}
+.deploy-name{font-family:var(--f-display);font-weight:800;font-size:17px;color:var(--ink-dark);letter-spacing:-.01em}
+.deploy-meta{font-family:var(--f-mono);font-size:11.5px;color:var(--ink-light);margin-top:3px;letter-spacing:.05em;text-transform:uppercase}
 
 /* ───────────────────────────── foot ───────────────────────────── */
 .foot{
@@ -412,7 +412,7 @@ body::after{
   .foot-hint{font-size:8.5px}
   .foot-hint .key{padding:0 3px;min-width:15px;height:15px;font-size:8px}
   .rail-right{
-    flex:0 0 auto;height:78px;width:100%;
+    flex:0 0 auto;height:88px;width:100%;
     flex-direction:row;align-items:center;gap:12px;padding:8px 10px;
   }
   .rail-right .rail-head,.rail-right .rail-sub{display:none}
@@ -433,7 +433,7 @@ body::after{
   :root{--hud-h:64px;--foot-h:30px}
   #nextCv{width:30px;height:30px}
   .next-box .k{font-size:7.5px}
-  .rail{flex-basis:148px;width:148px;padding:8px}
+  .rail{flex-basis:184px;width:184px;padding:9px}
   .brand-txt span{display:none}
   .ov-panel{padding:20px 22px 16px}
   .rail-right .ladder{grid-template-columns:repeat(6,1fr)}

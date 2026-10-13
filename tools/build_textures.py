@@ -8,8 +8,7 @@ Labels     : small uppercase stencil text (real, legible at texture scale)
 Identity   : ONE vivid accent per specimen
 Wear       : scratches + faint grime from the downloaded scans
 
-Emits per level:  <lv>_a.jpg albedo   <lv>_e.jpg near-black emissive
-(no neon in this language — the emissive map is deliberately inert)
+Emits per level:  <lv>_a.jpg albedo
 """
 import os, math, random
 import numpy as np
@@ -265,10 +264,8 @@ def build(spec):
     albedo = albedo.filter(ImageFilter.GaussianBlur(0.4))
     albedo.save(os.path.join(DST, lid + "_a.jpg"), "JPEG", quality=92, optimize=True)
 
-    # inert emissive: barely-there marks so the material path stays uniform
-    e = (np.asarray(acc, dtype=np.float32) / 255.0) * 0.10
-    Image.fromarray((np.clip(e, 0, 1) * 255).astype(np.uint8), "RGB").save(
-        os.path.join(DST, lid + "_e.jpg"), "JPEG", quality=88, optimize=True)
+    # no emissive map is written: NASA-punk has no neon, and the accent
+    # already lives in the albedo as painted hardware.
     return lid
 
 if __name__ == "__main__":

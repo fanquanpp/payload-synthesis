@@ -312,11 +312,12 @@
       geos[i] = geometryFor(L.geo);
       var flat = !!FLAT[L.geo];
       var map = loadTex('assets/tex/final/' + L.tex + '_a.jpg', true);
-      var emap = loadTex('assets/tex/final/' + L.tex + '_e.jpg', true);
+      /* no emissive map: this language has no neon. A very faint uniform
+         lift just keeps parts legible against the dark bay. */
       mats[i] = new THREE.MeshStandardMaterial({
-        map: map, emissiveMap: emap,
+        map: map,
         emissive: new THREE.Color(L.col),
-        emissiveIntensity: 0.05 + i * 0.012,
+        emissiveIntensity: 0.04,
         metalness: L.metal, roughness: L.rough,
         flatShading: flat,
         envMapIntensity: 0.85
@@ -418,7 +419,7 @@
     if (!ghost.userData.inner || ghost.userData.level !== level) {
       if (ghost.userData.inner) ghost.remove(ghost.userData.inner);
       var inner = new THREE.Mesh(geos[level], new THREE.MeshStandardMaterial({
-        map: mats[level].map, emissiveMap: mats[level].emissiveMap,
+        map: mats[level].map,
         emissive: new THREE.Color(L.col), emissiveIntensity: 0.4,
         metalness: L.metal, roughness: L.rough, flatShading: mats[level].flatShading,
         transparent: true, opacity: 0.5
