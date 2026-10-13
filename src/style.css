@@ -105,8 +105,8 @@ body::after{
   background:linear-gradient(90deg,var(--stripe-1) 25%,var(--stripe-2) 25%,var(--stripe-2) 50%,var(--stripe-3) 50%,var(--stripe-3) 75%,var(--stripe-4) 75%)}
 @keyframes bootIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
 .boot-mark{display:flex;justify-content:center;margin-bottom:16px}
-.boot-mark svg{animation:markSpin 16s linear infinite}
-@keyframes markSpin{to{transform:rotate(360deg)}}
+.boot-mark svg{/* static: the mark is a stamp, not a spinner */}
+
 .boot-title{font-family:var(--f-display);font-weight:900;font-size:clamp(20px,4.4vw,32px);letter-spacing:-.01em;color:var(--ink-dark)}
 .boot-sub{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.22em;color:var(--ink-light);margin-top:8px;text-transform:uppercase}
 .boot-bar{width:min(300px,64vw);height:10px;background:var(--bg-deep);border:1.5px solid var(--ink-dark);margin:22px auto 12px;position:relative;overflow:hidden}
@@ -439,7 +439,7 @@ body::after{
   .rail-right .ladder{grid-template-columns:repeat(6,1fr)}
 }
 @media (prefers-reduced-motion: reduce){
-  .boot-mark svg,.alert.on,.ov-new.on{animation:none}
+  .alert.on,.ov-new.on{animation:none}
 }
 
 /* ══════════════════════════════════════════════════════════════════
