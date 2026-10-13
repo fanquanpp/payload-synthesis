@@ -18,7 +18,7 @@
 
   var CFG = {
     BW: BASE_BW, BH: BH,
-    BASE_BW: BASE_BW, MIN_ASPECT: MIN_ASPECT, MAX_ASPECT: MAX_ASPECT,
+    MIN_ASPECT: MIN_ASPECT, MAX_ASPECT: MAX_ASPECT,
 
     GRAV: 150,
     FIXED: 1 / 180,
@@ -65,15 +65,16 @@
 
     MAX_PARTS: 320,
     MAX_FLOATS: 14,
-    MAX_WAVES: 14,
+    MAX_WAVES: 14,                 /* wave sprite pool (fx.js) */
     MAX_RINGS: 10,
     MAX_LOG: 7,
 
-    COMBO_WINDOW: 2.4,
-    SCORE_POP: 0.42,
+    COMBO_WINDOW: 2.6,             /* base chain window; +0.05s per link */
+    COMBO_CAP: 32,                 /* multiplier ceiling — deep chains pay */
 
-    SKILL_STEP: 500,
-    SKILL_MAX: 3
+    SKILL_STEP: 500,               /* points per reject charge */
+    SKILL_MAX: 9,                  /* stockpile cap */
+    SKILL_ESCALATE: 4,             /* beyond this, each charge costs +50% */
   };
 
   /* ── payload ladder ──────────────────────────────────────────

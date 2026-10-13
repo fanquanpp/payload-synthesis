@@ -34,7 +34,7 @@ a zero-config static site.
 | Mouse move + click | Aim and drop |
 | Touch drag + release | Drop on mobile |
 | `Q` / click "Prune" in the HUD | Enter prune mode, then click any part to remove it |
-| `Esc` | Exit prune mode / pause |
+| `Esc` / `P` | Exit prune mode / pause |
 | "EN / 中文" in the top-right of the HUD | Toggle Chinese/English (your choice is remembered; on a first visit it is decided by browser language) |
 
 - Two parts of the **same tier** that touch merge into the next tier up.

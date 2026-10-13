@@ -86,7 +86,7 @@
 
   /* ── shockwave rings: ink outline + accent, ease-out expansion ── */
   function initRings() {
-    var geo = new THREE.RingGeometry(0.86, 1, 64);
+    var geo = new THREE.RingGeometry(0.93, 1, 64);   /* thin band */
     var mat = new THREE.MeshBasicMaterial({
       transparent: true, depthWrite: false, side: THREE.DoubleSide
     });
@@ -108,11 +108,11 @@
     if (!rings) return;
     power = power || 1;
     var r = ringData[ringPtr];
-    r.life = r.max = 0.4 + power * 0.2;
+    r.life = r.max = 0.28 + power * 0.12;
     r.x = x; r.y = y;
-    r.r0 = radius * 0.6;
-    r.r1 = radius * (1.9 + power * 0.7);
-    r.w = 0.7 + power * 0.55;
+    r.r0 = radius * 0.72;
+    r.r1 = radius * (1.75 + power * 0.55);
+    r.w = 0.5 + power * 0.35;
     r.col.set(colorHex);
     /* lerp toward cream as it expands — accent fading to paint */
     rings.setColorAt(ringPtr, r.col);
@@ -237,9 +237,9 @@
       r.life -= dt; rdirty = true;
       if (r.life <= 0) { rings.setMatrixAt(j, HIDDEN); continue; }
       var kk = 1 - r.life / r.max;
-      var ease = 1 - Math.pow(1 - kk, 3.2);          /* fast out, long settle */
+      var ease = 1 - Math.pow(1 - kk, 2.6);          /* quick out, no linger */
       var rad = r.r0 + (r.r1 - r.r0) * ease;
-      var th = Math.pow(1 - kk, 1.6) * r.w;          /* thin out as it goes */
+      var th = Math.pow(1 - kk, 1.9) * r.w;          /* thin out fast */
       _v.set(wx(r.x), wy(r.y), 2);
       _q.identity();
       _s.set(rad, rad, 1);

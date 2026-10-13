@@ -118,23 +118,29 @@
     SA.world.setDanger(0);
   }
 
+  /* the next charge's price: base 500, +50% for each charge held past
+     the free-stockpile allowance — stockpiling is possible, not free */
+  function nextSkillCost() {
+    var over = Math.max(0, skillCharges - C.SKILL_ESCALATE);
+    return Math.round(C.SKILL_STEP * Math.pow(1.5, over));
+  }
   function skillProgress() {
-    var base = nextSkillAt - C.SKILL_STEP;
-    return SA.cfg.clamp((score - base) / C.SKILL_STEP, 0, 1);
+    return SA.cfg.clamp((score - nextSkillAt) / nextSkillCost(), 0, 1);
   }
   function syncSkill() { SA.ui.setSkill(skillCharges, armed, skillProgress()); }
 
   function checkSkillUnlock() {
-    var got = false;
-    while (score >= nextSkillAt) {
-      if (skillCharges < C.SKILL_MAX) skillCharges++;
-      nextSkillAt += C.SKILL_STEP;
-      got = true;
+    var got = 0;
+    while (score >= nextSkillAt && skillCharges < C.SKILL_MAX) {
+      skillCharges++;
+      got++;
+      nextSkillAt += nextSkillCost();          /* price grows with stock */
     }
+    if (score >= nextSkillAt) nextSkillAt = score + 1;  /* full: park the meter */
     if (got) {
       SA.ui.log(SA.t('log.skill') + skillCharges + '/' + C.SKILL_MAX + ')', true);
       SA.ui.toast(SA.t('toast.rejectReady'));
-      SA.fx.floatText(C.BW / 2, C.BH * 0.34, '+1 REJECT', '#D63A2C', 1.15);
+      SA.fx.floatText(C.BW / 2, C.BH * 0.34, '+' + got + ' REJECT', '#D63A2C', 1.15);
       SA.fx.wave(C.BW / 2, C.BH * 0.34, '#D63A2C', 22, 1.0);
     }
     syncSkill();
@@ -190,10 +196,15 @@
     disarmSkill();
   }
 
+  var starting = false;
   function startGame() {
+    if (starting || state === 'playing') return;
+    starting = true;
     SA.ui.gate(SA.t('gate.spooling'), function () {
+      starting = false;
       reset();
       state = 'playing';
+      setTimeout(function () { inputArmed = true; }, 460);
       SA.ui.hide('ovStart'); SA.ui.hide('ovPause'); SA.ui.hide('ovOver');
       SA.ui.toast(SA.t('toast.start'));
       last = 0;
@@ -237,7 +248,7 @@
 
   /* ══════════════════════════ drop ═══════════════════════════ */
   function drop() {
-    if (state !== 'playing') return;
+    if (state !== 'playing' || !inputArmed) return;
     if (dropCd > 0) {                 /* remember the press, fire it later */
       bufferedDrop = C.INPUT_BUFFER;
       return;
@@ -275,23 +286,28 @@
     var lv = ev.lv, L = LADDER[lv];
 
     if (comboTimer > 0) combo++; else combo = 1;
-    comboTimer = C.COMBO_WINDOW;
+    /* the window stretches a little with each link, so a fast streak
+       can run long, but it always closes if you stop feeding it */
+    comboTimer = C.COMBO_WINDOW + Math.min(combo, 20) * 0.05;
 
     var base = (lv + 1) * (lv + 1);
-    var mult = Math.min(combo, 8);
+    var mult = Math.min(combo, C.COMBO_CAP);
     var pts = base * mult;
     score += pts;
 
     SA.ui.setScore(score);
     checkSkillUnlock();
     SA.ui.setCombo(mult, true);
-    SA.fx.floatText(ev.x, ev.y - 5, '+' + pts, L.col, lv >= 6 ? 1.35 : (lv >= 3 ? 1.12 : 1));
-    SA.fx.wave(ev.x, ev.y, L.emis, L.r, 0.6 + lv * 0.12);
-    SA.fx.burst(ev.x, ev.y, L.emis, 9 + lv * 3, 0.8 + lv * 0.14);
-    SA.world.setShake(0.18 + lv * 0.06);
-    SA.fx.hit(0.18 + lv * 0.07);
+    var big = lv >= 6 ? 1.35 : (lv >= 3 ? 1.12 : 1);
+    if (mult >= 10) big += 0.25;                  /* deep chains read louder */
+    SA.fx.floatText(ev.x, ev.y - 5, '+' + pts, L.col, big);
+    SA.fx.wave(ev.x, ev.y, L.emis, L.r, Math.min(1.15, 0.55 + lv * 0.09));
+    SA.fx.burst(ev.x, ev.y, L.emis, 9 + lv * 3, Math.min(1.35, 0.8 + lv * 0.1));
+    SA.world.setShake(Math.min(0.72, 0.16 + lv * 0.05));
+    SA.fx.hit(Math.min(0.55, 0.16 + lv * 0.06));
 
     if (combo >= 2) SA.ui.comboPop('×' + mult + '  CHAIN');
+    if (combo === C.COMBO_CAP) SA.ui.log('MAX · 连锁已到顶 ×' + C.COMBO_CAP, true);
     if (lv >= 3) SA.ui.log(SA.t('log.merge') + L.code + ' ×' + mult + '  +' + pts, lv >= 6);
 
     if (lv > maxTier) {
@@ -384,6 +400,7 @@
   }
 
   /* ══════════════════════════ loop ═══════════════════════════ */
+  var loopRunning = false;
   function frame(t) {
     requestAnimationFrame(frame);
     if (!last) last = t;
@@ -410,6 +427,11 @@
       fpsAcc = 0; fpsFrames = 0;
     }
   }
+
+  /* true only after the gate curtain has fully retracted, so input
+     during the 440ms closing animation is swallowed instead of firing
+     a drop the player cannot see */
+  var inputArmed = false;
 
   /* step the render quality up or down to hold the frame rate */
   var slowTicks = 0, fastTicks = 0;
@@ -446,14 +468,14 @@
 
   function bindInput() {
     stage.addEventListener('pointermove', function (e) {
-      if (state !== 'playing') return;
+      if (state !== 'playing' || !inputArmed) return;
       ptrX = boardX(e.clientX); ptrY = boardY(e.clientY);
       if (armed) { hovered = bodyAt(ptrX, ptrY); SA.world.setHover(hovered); return; }
       if (e.pointerType === 'mouse' || pendingDrop) aimX = ptrX;
     }, { passive: true });
 
     stage.addEventListener('pointerdown', function (e) {
-      if (state !== 'playing') return;
+      if (state !== 'playing' || !inputArmed) return;
       e.preventDefault();
       ptrX = boardX(e.clientX); ptrY = boardY(e.clientY);
       if (armed) {
@@ -486,7 +508,12 @@
         if (armed) disarmSkill(); else armSkill();
         return;
       }
-      if (e.key === 'Escape') { state === 'paused' ? resumeGame() : pauseGame(); return; }
+      if (e.key === 'Escape' || e.key === 'p' || e.key === 'P') {
+        e.preventDefault();
+        if (state === 'paused') resumeGame();
+        else if (state === 'playing') pauseGame();
+        return;
+      }
       if (state !== 'playing') {
         if ((e.key === ' ' || e.key === 'Enter') && state === 'ready') { e.preventDefault(); startGame(); }
         return;
@@ -541,7 +568,7 @@
       SA.ui.boot(function () {
         state = 'ready';
         reset();
-        requestAnimationFrame(frame);
+        if (!loopRunning) { loopRunning = true; requestAnimationFrame(frame); }
       });
     });
   }
