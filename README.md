@@ -84,13 +84,14 @@ assets/tex/
 tools/
   fetch_textures.py       从 ambientCG 检索并下载材质
   build_textures.py       美术加工：把照片扫描转成 NASA 朋克硬件贴图
+  gen_cursors.py          生成 style.css 里的 SVG 星环光标（data URI）
   responsive-harness.html 横竖屏并排验证页（开发用）
 ```
 
 ---
 
 ## 美术管线
-`tools/` 下两个脚本构成完整素材流程，可重跑：
+`tools/` 下的脚本构成完整素材流程，可重跑：
 
 ```bash
 python tools/fetch_textures.py     # 下载 11 张 ambientCG 1K 材质（CC0）
@@ -108,7 +109,8 @@ python tools/build_textures.py     # 加工成品贴图 → assets/tex/final/
 5. 写入真实可读的**全大写钢印编号**（`STOW 84S`、`THIS SIDE UP`、`NO STEP`…）；
 6. 划痕 + 轻噪点，输出 1024×512 等距柱状投影贴图。
 
-风格刻意**不做霓虹发光**：自发光贴图接近全黑，辉光后处理强度仅 0.62 且随危险度上升。
+风格刻意**不做霓虹发光**：贴图里根本没有自发光贴图，材质只留 0.04 的极弱自发光底色
+以保证部件在暗舱里可辨；辉光后处理强度仅 0.10，只在舱内接近越限时轻微上升。
 
 ---
 

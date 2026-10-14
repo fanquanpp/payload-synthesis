@@ -88,17 +88,17 @@ vendor/
 assets/tex/
   lv01..lv11.jpg          Raw ambientCG material scans (texture-pipeline input)
   final/lv##_a.jpg        Finished albedo maps
-  final/lv##_e.jpg        Finished emissive maps (deliberately near-black in this style)
 tools/
   fetch_textures.py       Search for and download materials from ambientCG
   build_textures.py       Art pass: turn photo scans into NASA-punk hardware textures
+  gen_cursors.py          Generates the SVG star-orbit cursors embedded in style.css
   responsive-harness.html Side-by-side portrait/landscape check page (development)
 ```
 
 ---
 
 ## Art Pipeline
-The two scripts under `tools/` form a complete, re-runnable asset workflow:
+The scripts under `tools/` form a complete, re-runnable asset workflow:
 
 ```bash
 python tools/fetch_textures.py     # download 11 ambientCG 1K materials (CC0)
@@ -114,8 +114,9 @@ Processing steps:
 5. Stamp in genuinely legible **all-caps stencil codes** (`STOW 84S`, `THIS SIDE UP`, `NO STEP`…);
 6. Add scratches and light noise, then output 1024×512 equirectangular maps.
 
-The style deliberately **avoids neon glow**: the emissive maps are close to fully black,
-and the bloom post-processing strength is only 0.62 and rises with the danger level.
+The style deliberately **avoids neon glow**: there are no emissive maps at all, only a
+very faint 0.04 emissive lift so parts stay legible in the dark bay, and the bloom pass
+sits at strength 0.10, rising only slightly as the bay approaches the limit line.
 
 ---
 
