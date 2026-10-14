@@ -144,7 +144,7 @@ activity log.
 - Position resolution proceeds **from largest radius to smallest**, so big parts are solved first and small parts don't get squeezed out of the pile.
 - Deep-penetration relaxation: when overlap is well past tolerance, extra **under-relaxed** push-out iterations run, so contact is never broken, waking sleeping bodies if needed.
 - Creep damper: below 6 u/s an extra damping term applies, so a pile actually stops and falls asleep instead of sliding at a few u/s forever on low friction.
-- **Penetration-aware sleeping**: a body may only fall asleep when it is not currently overlapping anything, which avoids freezing in a half-overlapped state.
+- **Penetration-aware sleeping**: a body may only fall asleep when it is not currently overlapping anything, which avoids freezing in a half-overlapped state. The test is displacement from an anchor, not instantaneous velocity — a large part wedged in a cradle of diagonal contacts keeps a few u/s of standing velocity (gravity in, contact impulse out) while never actually moving, and a velocity test would keep it awake forever.
 - When the mass difference is too large, the position-correction factor is raised so light parts don't sink into heavy ones.
 
 ---

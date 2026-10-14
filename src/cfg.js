@@ -38,7 +38,7 @@
     DEEP_THRESHOLD: 0.5,           /* only pairs this far past tolerance */
     DEEP_OVER: 0.5,                /* under-relaxed: never break contact */
 
-    SLEEP_VEL2: 5.0,               /* freeze a pile before creep sets in */
+    SLEEP_DIST2: 0.12,             /* may not stray 0.35 u from the anchor */
     SLEEP_TIME: 0.45,
     SLEEP_PEN_SLOP: 0.4,           /* may only sleep when not overlapping */
     WAKE_VEL2: 3.5,

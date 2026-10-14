@@ -103,7 +103,7 @@
       angle: (Math.random() - 0.5) * 6.28,
       spin: 0,
       pop: 0, age: 0, maxPen: 0, dead: false,
-      sleeping: false, sleepTimer: 0,
+      sleeping: false, sleepTimer: 0, anchorX: x, anchorY: y,
       hull: HULLS[L.geo] || HULLS.sphere,   /* template */
       outer: 0,
       eL: 0, eR: 0, eT: 0, eB: 0,           /* wall reach per direction */
@@ -119,7 +119,7 @@
     return b;
   };
 
-  function wake(b) { if (b.sleeping) { b.sleeping = false; b.sleepTimer = 0; } }
+  function wake(b) { if (b.sleeping) { b.sleeping = false; b.sleepTimer = 0; b.anchorX = b.x; b.anchorY = b.y; } }
 
   /* ── deepest overlapping circle pair between two hulls ───────
      Returns the penetration depth (0 when the hulls are apart) and
@@ -535,19 +535,26 @@
     this._solvePosWalls();
     this._deepFix();
 
-    /* a body may only sleep when it is not currently interpenetrating
-       anything, otherwise piles freeze mid-overlap */
+    /* A body may only sleep when it is not currently interpenetrating
+       anything, otherwise piles freeze mid-overlap.
+       The test is displacement, not instantaneous velocity: a large
+       part wedged in a cradle of diagonal contacts keeps a small
+       standing velocity — gravity in each substep, a diagonal contact
+       impulse back out — while never actually going anywhere. Testing
+       velocity kept such piles awake forever. Distance from an anchor
+       is robust against that and still catches a slow steady slide. */
     for (var s = 0; s < n; s++) {
       var bb = bs[s];
       if (bb.sleeping) continue;
-      var v2 = bb.vx * bb.vx + bb.vy * bb.vy;
-      if (v2 < C.SLEEP_VEL2 && bb.maxPen < C.SLEEP_PEN_SLOP) {
+      var dxa = bb.x - bb.anchorX, dya = bb.y - bb.anchorY;
+      if (dxa * dxa + dya * dya < C.SLEEP_DIST2 && bb.maxPen < C.SLEEP_PEN_SLOP) {
         bb.sleepTimer += h;
         if (bb.sleepTimer >= C.SLEEP_TIME) {
           bb.sleeping = true; bb.vx = 0; bb.vy = 0; bb.spin = 0;
         }
       } else {
         bb.sleepTimer = 0;
+        bb.anchorX = bb.x; bb.anchorY = bb.y;
       }
     }
   };
