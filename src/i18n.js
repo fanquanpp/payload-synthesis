@@ -13,7 +13,6 @@
   var DICT = {
     zh: {
       'lang.other': 'EN',
-      'lang.self': '中文',
 
       'brand.sub': '载荷合成 <i>·</i> STD 1/1',
       'hud.score': 'Score 得分',
@@ -44,10 +43,10 @@
       'start.eyebrow': 'Mission Brief · 任务简报',
       'start.t1': '载荷',
       'start.t2': '合成',
-      'start.desc': '将同级载荷投入装配舱，两者接触即合并为更高一级的部件。<br>越限后持续 <b>6 秒</b> 将触发任务中止。<br>每 <b>500</b> 分获得一次「剔除」，可移除任意一个部件。',
+      'start.desc': '将同级载荷投入装配舱，两者接触即合并为更高一级的部件。<br>越限后持续 <b>{overTime} 秒</b> 将触发任务中止。<br>每 <b>{skillStep}</b> 分获得一次「剔除」，可移除任意一个部件。',
       'start.btn': '开始装配',
       'start.foot': '操作 · 方向键移动 / 空格投放 / 点击亦可<br>目标 · 装配运载火箭 LV-11',
-      'start.note': '注：越限 6 秒即中止。<br>别把大件堆到限位线以上。',
+      'start.note': '注：越限 {overTime} 秒即中止。<br>别把大件堆到限位线以上。',
 
       'pause.eyebrow': 'System Hold · 已暂停',
       'pause.title': '装配挂起',
@@ -92,7 +91,6 @@
 
     en: {
       'lang.other': '中文',
-      'lang.self': 'EN',
 
       'brand.sub': 'PAYLOAD SYNTHESIS <i>·</i> STD 1/1',
       'hud.score': 'Score',
@@ -123,10 +121,10 @@
       'start.eyebrow': 'Mission Brief',
       'start.t1': 'Payload',
       'start.t2': ' Synthesis',
-      'start.desc': 'Release hardware into the assembly bay. Two units of the same tier merge into the next one.<br>Cross the limit line for <b>6 seconds</b> and the mission aborts.<br>Every <b>500</b> points earns one Reject charge — remove any unit.',
+      'start.desc': 'Release hardware into the assembly bay. Two units of the same tier merge into the next one.<br>Cross the limit line for <b>{overTime} seconds</b> and the mission aborts.<br>Every <b>{skillStep}</b> points earns one Reject charge — remove any unit.',
       'start.btn': 'Initiate',
       'start.foot': 'Controls · Arrows to move / Space to release / Click or tap<br>Objective · assemble LV-11 LAUNCH VEHICLE',
-      'start.note': 'Note: 6 s over the line aborts.<br>Keep the big hardware low.',
+      'start.note': 'Note: {overTime} s over the line aborts.<br>Keep the big hardware low.',
 
       'pause.eyebrow': 'System Hold',
       'pause.title': 'Assembly Held',
@@ -181,11 +179,26 @@
     return nav.indexOf('zh') === 0 ? 'zh' : 'en';
   }
 
+  /* Gameplay numbers in the copy come from cfg, so the brief can never
+     drift from the mechanic again — it advertised 500 points per reject
+     long after the price became flat 10000. Resolved lazily: cfg.js is
+     loaded after this file. */
+  function fill(s) {
+    if (s == null || s.indexOf('{') < 0) return s;
+    var C = root.SA && root.SA.cfg && root.SA.cfg.CFG;
+    if (!C) return s;
+    return s
+      .split('{skillStep}').join(String(C.SKILL_STEP).replace(/\B(?=(\d{3})+(?!\d))/g, ','))
+      .split('{overTime}').join(String(C.OVER_TIME))
+      .split('{comboCap}').join(String(C.COMBO_CAP))
+      .split('{skillMax}').join(String(C.SKILL_MAX));
+  }
+
   function t(key) {
     var d = DICT[lang] || DICT.zh;
     var v = d[key];
     if (v == null) v = (DICT.zh[key] != null ? DICT.zh[key] : key);
-    return v;
+    return fill(v);
   }
 
   /* walk the document and re-render every bound node */

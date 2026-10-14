@@ -18,7 +18,6 @@
   var fpsAcc = 0, fpsFrames = 0;
   var canvas, stage, wrap, dpr = 1;
   var rectCache = null;
-  var shakeFromMerge = 0;
   var autoPause = true;          /* off for embeds / automated capture */
 
   /* purge skill (from the gameplay reference: 500 pts = 1 charge) */
@@ -126,12 +125,18 @@
 
   function checkSkillUnlock() {
     var got = 0;
-    while (score >= nextSkillAt && skillCharges < C.SKILL_MAX) {
+    while (skillCharges < C.SKILL_MAX && score >= nextSkillAt) {
       skillCharges++;
       got++;
       nextSkillAt += C.SKILL_STEP;
     }
-    if (score >= nextSkillAt) nextSkillAt = score + 1;  /* full: park the meter */
+    /* At the stockpile cap the next threshold is held a full step ahead
+       of the current score. Without that, spending a charge would be
+       refunded by the very next merge — the meter parked one point in
+       front of the score, so any gain refilled it. */
+    if (skillCharges >= C.SKILL_MAX && score >= nextSkillAt) {
+      nextSkillAt = score + C.SKILL_STEP;
+    }
     if (got) {
       SA.ui.log(SA.t('log.skill') + skillCharges + '/' + C.SKILL_MAX + ')', true);
       SA.ui.toast(SA.t('toast.rejectReady'));
@@ -303,7 +308,7 @@
 
     if (combo >= 2) SA.ui.comboPop('×' + mult + '  CHAIN');
     if (combo === C.COMBO_CAP) SA.ui.log('MAX · 连锁已到顶 ×' + C.COMBO_CAP, true);
-    if (lv >= 3) SA.ui.log(SA.t('log.merge') + L.code + ' ×' + mult + '  +' + pts, lv >= 6);
+    if (lv >= 3) SA.ui.log(SA.t('log.merge') + L.code + ' ×' + mult + '  +' + SA.cfg.fmtScore(pts), lv >= 6);
 
     if (lv > maxTier) {
       maxTier = lv;
@@ -356,6 +361,7 @@
     }
 
     SA.fx.update(dt, performance.now() / 1000);
+    SA.ui.setImpact(SA.fx.flash);
 
     /* ── HUD readouts ── */
     var mass = 0, top = -1;

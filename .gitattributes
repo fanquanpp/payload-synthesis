@@ -4,3 +4,4 @@
 *.woff2 binary
 *.ico binary
 vendor/** -diff linguist-vendored
+*.bat text eol=crlf

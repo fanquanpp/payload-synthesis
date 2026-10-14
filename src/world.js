@@ -511,7 +511,10 @@
       camera.rotation.z = 0;
     }
     if (QUALITY_BLOOM[quality] > 0) {
-      bloom.strength = (0.62 + dangerLevel * 0.7) * (quality === 0 ? 1 : 0.9);
+      /* a whisper, per the art direction: this language has no neon.
+         It only keeps bright speculars off the clip point, and lifts a
+         little as the bay goes critical. */
+      bloom.strength = 0.10 + dangerLevel * 0.16;
       composer.render();
     } else {
       renderer.render(scene, camera);

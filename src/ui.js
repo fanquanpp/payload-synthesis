@@ -13,12 +13,6 @@
   var startCells = [];
   var clockTimer = null;
 
-  function hexRgba(hex, a) {
-    var h = hex.replace('#', '');
-    var n = parseInt(h, 16);
-    return 'rgba(' + ((n >> 16) & 255) + ',' + ((n >> 8) & 255) + ',' + (n & 255) + ',' + a + ')';
-  }
-
   function init() {
     ['uiScore', 'uiBest', 'uiCombo', 'comboWrap', 'uiMass', 'uiCount', 'uiTier', 'uiTime',
      'uiLog', 'uiClock', 'uiFps', 'ladder', 'deploy', 'deployName', 'deployMeta',
@@ -28,7 +22,7 @@
      'gateTop', 'gateBottom', 'gateStatus', 'gateTxt',
      'skillBtn', 'skillCount', 'skillMeter',
      'btnStart', 'btnRestart', 'btnRestart2', 'btnResume', 'btnPause',
-     'btnLang', 'armHint'].forEach(function (k) { el[k] = $(k); });
+     'btnLang', 'armHint', 'impactVeil'].forEach(function (k) { el[k] = $(k); });
 
     /* load albedo thumbnails for the 2D codex / preview */
     LADDER.forEach(function (L, i) {
@@ -66,17 +60,16 @@
     if (cell) {
       var g = cell.cv.getContext('2d');
       g.clearRect(0, 0, 96, 96);
-      if (found[i]) drawToken(g, 96, i, { glow: i >= 5 });
+      if (found[i]) drawToken(g, 96, i);
     }
     if (startCells[i]) {
-      drawToken(startCells[i].getContext('2d'), 96, i, { glow: i >= 7 });
+      drawToken(startCells[i].getContext('2d'), 96, i);
     }
     if (nextShown === i) setNext(i);
   }
 
   /* ── 2D specimen token: a painted part seen face-on ───────── */
-  function drawToken(ctx, size, level, opts) {
-    opts = opts || {};
+  function drawToken(ctx, size, level) {
     var L = LADDER[level];
     var cx = size / 2, cy = size / 2;
     var R = size * 0.42;
@@ -152,7 +145,7 @@
       c.width = c.height = 96;
       c.style.width = '24px'; c.style.height = '24px';
       el.startLadder.appendChild(c);
-      drawToken(c.getContext('2d'), 96, i, { glow: i >= 7 });
+      drawToken(c.getContext('2d'), 96, i);
       startCells.push(c);
     });
   }
@@ -162,7 +155,7 @@
     var cell = ladderCells[level];
     if (!cell || found[level]) return false;
     found[level] = true;
-    drawToken(cell.cv.getContext('2d'), 96, level, { glow: level >= 5 });
+    drawToken(cell.cv.getContext('2d'), 96, level);
     cell.node.classList.add('found');
     if (level > 0 && !silent) {
       cell.node.classList.add('new');
@@ -185,7 +178,7 @@
   var nextShown = -1;
   function setNext(level) {
     nextShown = level;
-    drawToken(el.nextCv.getContext('2d'), el.nextCv.width, level, { glow: level >= 4 });
+    drawToken(el.nextCv.getContext('2d'), el.nextCv.width, level);
     var L = LADDER[level];
     el.deployName.textContent = SA.partName(L);
     el.deployMeta.textContent = L.code + ' · R' + L.r.toFixed(1) + ' · M' + L.mass;
@@ -193,25 +186,46 @@
   }
 
   /* ── stats ────────────────────────────────────────────────── */
+  /* The readouts are pushed every frame from the game loop. These
+     memos keep a steady pile from touching the DOM 60 times a second
+     for values that only change on a merge. */
+  var lastMass = -1, lastCount = -1, lastTier = -2, lastTime = -1, lastFps = -1;
   function setScore(v) {
-    el.uiScore.textContent = v;
+    el.uiScore.textContent = SA.cfg.fmtScore(v);
     el.uiScore.classList.remove('bump');
     void el.uiScore.offsetWidth;
     el.uiScore.classList.add('bump');
   }
-  function setBest(v) { el.uiBest.textContent = v; }
+  function setBest(v) { el.uiBest.textContent = SA.cfg.fmtScore(v); }
   function setCombo(mult, alive) {
     el.uiCombo.textContent = '×' + mult;
     el.comboWrap.classList.toggle('hot', !!alive && mult > 1);
   }
-  function setMass(v) { el.uiMass.textContent = v; }
-  function setCount(v) { el.uiCount.textContent = v; }
+  function setMass(v) {
+    if (v === lastMass) return;
+    lastMass = v; el.uiMass.textContent = v;
+  }
+  function setCount(v) {
+    if (v === lastCount) return;
+    lastCount = v; el.uiCount.textContent = v;
+  }
   function setTier(lv) {
-    el.uiTier.textContent = lv == null ? '—' : LADDER[lv].code.replace('ORIG-', 'T');
+    if (lv === lastTier) return;
+    lastTier = lv;
+    el.uiTier.textContent = lv == null ? '—' : LADDER[lv].code;
     el.uiTier.classList.toggle('hot', lv != null && lv >= 6);
   }
-  function setTime(sec) { el.uiTime.textContent = SA.cfg.fmtTime(sec); }
-  function setFps(v) { el.uiFps.textContent = v + ' FPS'; }
+  function setTime(sec) {
+    var s = Math.max(0, sec | 0);
+    if (s === lastTime) return;
+    lastTime = s;
+    el.uiTime.textContent = SA.cfg.fmtTime(sec);
+  }
+  function setFps(v) {
+    if (v === lastFps) return;
+    lastFps = v;
+    el.uiFps.textContent = v + ' FPS';
+  }
 
   /* ── log ──────────────────────────────────────────────────── */
   function log(text, hi) {
@@ -223,9 +237,15 @@
   }
 
   /* ── alert / combo / toast ───────────────────────────────── */
+  /* the over-line countdown ticks every frame; only the tenths matter */
+  var lastAlertOn = null, lastAlertTxt = '';
   function alert(on, remain) {
-    el.alert.classList.toggle('on', !!on);
-    if (on && remain != null) el.alertTime.textContent = remain.toFixed(1) + 's';
+    on = !!on;
+    var txt = on && remain != null ? remain.toFixed(1) + 's' : '';
+    if (on === lastAlertOn && txt === lastAlertTxt) return;
+    lastAlertOn = on; lastAlertTxt = txt;
+    el.alert.classList.toggle('on', on);
+    if (txt) el.alertTime.textContent = txt;
   }
   function comboPop(text) {
     el.comboPop.textContent = text;
@@ -245,8 +265,8 @@
   function show(id) { el[id].classList.add('show'); }
   function hide(id) { el[id].classList.remove('show'); }
   function setOver(score, best, tier, isNew) {
-    el.overScore.textContent = score;
-    el.overBest.textContent = best;
+    el.overScore.textContent = SA.cfg.fmtScore(score);
+    el.overBest.textContent = SA.cfg.fmtScore(best);
     el.overTier.textContent = tier == null ? '—' : LADDER[tier].code;
     el.overNew.classList.toggle('on', !!isNew);
   }
@@ -317,6 +337,17 @@
     if (el.stage) el.stage.classList.toggle('arm', !!on);
   }
 
+  /* fx.flash is the impulse strength of the last hit (0..1). It was
+     computed and thrown away; here it drives the impact veil so a hard
+     merge or a purge reads as the bay taking the shock. */
+  var lastImpact = -1;
+  function setImpact(v) {
+    var q = Math.round((v || 0) * 32) / 32;
+    if (q === lastImpact) return;
+    lastImpact = q;
+    if (el.impactVeil) el.impactVeil.style.opacity = (q * 0.62).toFixed(3);
+  }
+
   SA.ui = {
     init: init, boot: boot,
     el: el,
@@ -326,7 +357,7 @@
     markFound: markFound, resetFound: resetFound,
     log: log, alert: alert, comboPop: comboPop, toast: toast,
     show: show, hide: hide, setOver: setOver,
-    drawToken: drawToken, stopClock: stopClock, onLangChange: onLangChange,
-    gate: gate, setSkill: setSkill, setTargeting: setTargeting
+    stopClock: stopClock, onLangChange: onLangChange,
+    gate: gate, setSkill: setSkill, setTargeting: setTargeting, setImpact: setImpact
   };
 })(window);

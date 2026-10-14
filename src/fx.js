@@ -14,7 +14,7 @@
   var parts, partData = [], partPtr = 0;
   var rings, ringData = [], ringPtr = 0;
   var motes;
-  var floats = [], floatPool = [];
+  var floatPool = [];
   var flash = 0;
 
   var _m4 = new THREE.Matrix4(), _q = new THREE.Quaternion(),

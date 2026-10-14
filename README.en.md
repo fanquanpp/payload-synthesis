@@ -39,28 +39,31 @@ a zero-config static site.
 
 - Two parts of the **same tier** that touch merge into the next tier up.
 - If a part crosses the red limit line inside the bay and stays there for **6 seconds**, the mission is aborted.
-- Consecutive merges build a **chain**, and the score is multiplied by the chain multiplier (up to ×8).
-- Every **500 points** earned grants one "Prune" charge (up to 3 stored), which removes any part to rescue the run.
+- Consecutive merges build a **chain**, and the score is multiplied by the chain multiplier (up to ×32).
+- Every **10,000 points** earned grants one "Prune" charge (up to 9 stored), which removes any part to rescue the run.
 - Dropping has **0.28 s of input buffering**: a key press during cooldown takes effect the instant the cooldown ends.
 
 ### The 11-Tier Parts Ladder
-| Level | Code | Name | Shape | Collision radius factor |
+| Level | Code | Name | Shape | Collision hull |
 |---|---|---|---|---|
-| 1 | P/L 01 | BOLT (螺栓) | hexagonal prism | 0.96 |
-| 2 | STOW 84S | SENSOR (传感器) | capsule | 1.00 |
-| 3 | REF 12-4 | BATTERY (电池组) | cube | 0.93 |
-| 4 | GYR-A | GYRO (陀螺仪) | sphere | 1.00 |
-| 5 | TANK 5 | CANISTER (储罐) | cylinder | 0.96 |
-| 6 | NO STEP | THRUSTER (推进器) | rocket bell | 0.96 |
-| 7 | ANT 7 | ANTENNA (天线) | torus | 0.90 |
-| 8 | F/T 08 | FUEL TANK (燃料舱) | dodecahedron | 0.96 |
-| 9 | SM-09 | SERVICE MODULE (服务舱) | slim cylinder | 0.96 |
-| 10 | CM-10 | COMMAND MODULE (指令舱) | cone | 0.93 |
-| 11 | LV-11 | LAUNCH VEHICLE (运载火箭) | large capsule | 0.98 |
+| 1 | P/L 01 | BOLT (螺栓) | hexagonal prism | 3 circles, lateral |
+| 2 | STOW 84S | SENSOR (传感器) | capsule | 3 circles, axial |
+| 3 | REF 12-4 | BATTERY (电池组) | cube | 4 circles, 2x2 |
+| 4 | GYR-A | GYRO (陀螺仪) | sphere | 1 circle |
+| 5 | TANK 5 | CANISTER (储罐) | cylinder | 4 circles, 2x2 |
+| 6 | NO STEP | THRUSTER (推进器) | rocket bell | 2 circles, twin lower lobes |
+| 7 | ANT 7 | ANTENNA (天线) | torus | 4 circles on the ring |
+| 8 | F/T 08 | FUEL TANK (燃料舱) | dodecahedron | 1 circle, near-spherical |
+| 9 | SM-09 | SERVICE MODULE (服务舱) | slim cylinder | 3 circles, axial |
+| 10 | CM-10 | COMMAND MODULE (指令舱) | cone | 2 circles, twin lower lobes |
+| 11 | LV-11 | LAUNCH VEHICLE (运载火箭) | large capsule | 3 circles, axial |
 
-The collision radius and the visual radius are kept **separate**: the visual uses the
-bounding sphere, while collision uses the solid radius scaled by the factor. This lets
-polyhedra and tori interlock naturally instead of "hitting air."
+The collision hull is a **per-shape fitted** set of circles, expressed in the same unit
+as the rendered mesh: the union's width equals the part's true half-width and its height
+equals the true half-height, with a little clipping at the corners. Big parts therefore
+never hover apart on a bounding sphere, and wide flat parts never float above the floor.
+Every circle radius is then pulled in by 1.5% so neighbouring large parts sit packed
+rather than leaving a gap.
 
 ---
 
@@ -136,10 +139,10 @@ activity log.
 ---
 
 ## Physics Solver
-- Uniform-grid broad phase plus pairwise narrow phase.
+- Uniform-grid broad phase plus a per-shape multi-circle hull narrow phase; each pair is resolved exactly once, in the first grid cell the two ranges share.
 - Position resolution proceeds **from largest radius to smallest**, so big parts are solved first and small parts don't get squeezed out of the pile.
-- Deep-penetration relaxation: when overlap exceeds a threshold, extra push-out iterations run, waking sleeping bodies if needed.
-- Low-impact contacts receive velocity damping, so stacks settle quietly instead of humming continuously.
+- Deep-penetration relaxation: when overlap is well past tolerance, extra **under-relaxed** push-out iterations run, so contact is never broken, waking sleeping bodies if needed.
+- Creep damper: below 6 u/s an extra damping term applies, so a pile actually stops and falls asleep instead of sliding at a few u/s forever on low friction.
 - **Penetration-aware sleeping**: a body may only fall asleep when it is not currently overlapping anything, which avoids freezing in a half-overlapped state.
 - When the mass difference is too large, the position-correction factor is raised so light parts don't sink into heavy ones.
 
