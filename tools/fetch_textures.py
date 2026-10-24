@@ -1,4 +1,5 @@
 import json, os, io, re, sys, time, zipfile, urllib.request, urllib.parse
+import ipaddress, socket
 from PIL import Image
 
 OUT = r"C:/Atian/Project/Threejs-games/synthetic-accumulation/assets/tex"
@@ -21,6 +22,20 @@ PICKS = [
 ]
 
 def get(url, timeout=180):
+    # Download links come from the ambientCG API response, so a tampered or
+    # redirected field would otherwise turn this into an SSRF pivot. Enforce
+    # the full boundary inline: https only, ambientCG hosts only, and the
+    # resolved address must be public (blocks loopback, LAN, cloud metadata).
+    parts = urllib.parse.urlsplit(url)
+    if parts.scheme != "https":
+        raise SystemExit("refusing non-https url: %s" % url)
+    host = (parts.hostname or "").lower()
+    if not (host == "ambientcg.com" or host.endswith(".ambientcg.com")):
+        raise SystemExit("refusing non-ambientCG host: %s" % url)
+    ip = ipaddress.ip_address(socket.gethostbyname(host))
+    if (ip.is_private or ip.is_loopback or ip.is_link_local
+            or ip.is_reserved or ip.is_multicast or ip.is_unspecified):
+        raise SystemExit("refusing non-public IP for %s: %s" % (host, ip))
     last = None
     for attempt in range(5):
         try:

@@ -12,3 +12,6 @@ _tmp/
 # ── build scratch ────────────────────────────────────────────────
 *.tgz
 *.zip
+
+# ── security scanner local data ──────────────────────────────────
+.mimosa/
